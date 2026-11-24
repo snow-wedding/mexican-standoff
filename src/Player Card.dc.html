@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;700;800&family=Chakra+Petch:wght@500;600;700&display=swap">
+<style>body{margin:0;background:#07060b;color:#f1eef8;font-family:'Chakra Petch',sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact;}a{color:#c9b6ff;}a:hover{color:#fff;}@media print{.no-print{display:none!important}}</style>
+</helmet>
+<div data-screen-label="{{ p.name }}" onClick="{{ p.flip }}" title="Click to flip" style="width:2.5in;height:3.5in;flex:none;perspective:1200px;cursor:pointer;break-inside:avoid;user-select:none;">
+  <div style="position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.3,.7,.2,1);transform:{{ p.rot }};">
+
+    <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-sizing:border-box;border-radius:16px;padding:2px;background:{{ p.frame }};box-shadow:0 0 0 1px rgba(255,255,255,.04),0 12px 32px -10px {{ p.glow }};">
+      <div style="position:relative;width:100%;height:100%;box-sizing:border-box;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#110e1a 0%,#0a0810 100%);display:flex;flex-direction:column;">
+        <div style="position:absolute;inset:5px;border-radius:10px;border:1px solid {{ p.line }};pointer-events:none;z-index:4;"></div>
+        <div style="flex:none;height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0 14px;position:relative;z-index:3;">
+          <div style="font-family:'Oxanium',sans-serif;font-weight:800;font-size:{{ p.nameSize }}px;line-height:1.15;letter-spacing:.06em;text-decoration:{{ p.capDeco }};text-decoration-thickness:2px;padding-bottom:4px;margin-bottom:-4px;text-underline-offset:3px;text-transform:uppercase;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;background-image:{{ p.text }};-webkit-background-clip:text;background-clip:text;color:transparent;">{{ p.name }}</div>
+          <div style="display:flex;gap:2px;">
+            <sc-for list="{{ p.stars }}" as="s" hint-placeholder-count="5">
+              <svg viewBox="0 0 24 24" width="11" height="11" style="display:block;filter:{{ s.shadow }};"><polygon points="12,2.5 14.8,8.7 21.5,9.4 16.4,13.9 17.9,20.5 12,17.1 6.1,20.5 7.6,13.9 2.5,9.4 9.2,8.7" fill="{{ s.fill }}" stroke-linejoin="round"></polygon></svg>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1;min-height:0;margin:0 9px 9px;border-radius:8px;position:relative;overflow:hidden;background:{{ p.stage }};">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 18px,rgba(255,255,255,.035) 18px 19px);"></div>
+          <div style="position:absolute;left:50%;top:44%;width:180px;height:180px;transform:translate(-50%,-50%) rotate(45deg);border:1px solid {{ p.line }};opacity:.5;"></div>
+          <div style="position:absolute;left:50%;top:44%;width:130px;height:130px;transform:translate(-50%,-50%) rotate(45deg);border:1px solid {{ p.line }};opacity:.3;"></div>
+          <sc-for list="{{ p.leftList }}" as="u" hint-placeholder-count="0">
+            <div style="position:absolute;left:-58px;top:6px;width:250px;height:146px;background-image:url({{ u }});background-size:contain;background-repeat:no-repeat;background-position:center top;opacity:.5;filter:saturate(.7) brightness(.8);"></div>
+          </sc-for>
+          <sc-for list="{{ p.rightList }}" as="u" hint-placeholder-count="0">
+            <div style="position:absolute;right:-58px;top:6px;width:250px;height:146px;background-image:url({{ u }});background-size:contain;background-repeat:no-repeat;background-position:center top;opacity:.5;filter:saturate(.7) brightness(.8);"></div>
+          </sc-for>
+          <sc-for list="{{ p.heroList }}" as="u" hint-placeholder-count="0">
+            <div style="position:absolute;left:50%;top:-4px;width:370px;height:216px;transform:translateX(-50%);background-image:url({{ u }});background-size:contain;background-repeat:no-repeat;background-position:center top;filter:drop-shadow(0 10px 18px rgba(0,0,0,.6));"></div>
+          </sc-for>
+          <sc-for list="{{ p.photoList }}" as="u" hint-placeholder-count="0">
+            <div style="position:absolute;inset:0;background-image:url({{ u }});background-size:cover;background-position:center 20%;"></div>
+          </sc-for>
+          <sc-if value="{{ p.heroNoImg }}">
+            <div style="position:absolute;left:0;right:0;top:34%;text-align:center;font-family:'Oxanium',sans-serif;font-weight:800;font-size:64px;letter-spacing:.04em;color:transparent;-webkit-text-stroke:1px {{ p.line }};opacity:.8;">{{ p.heroInitial }}</div>
+          </sc-if>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg,rgba(10,8,16,0) 0%,rgba(10,8,16,.75) 55%,#0a0810 100%);"></div>
+          <div style="position:absolute;left:0;right:0;bottom:12px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:0 10px;">
+            <sc-if value="{{ p.hasTop }}" hint-placeholder-val="{{ true }}">
+              <div style="font-family:'Oxanium',sans-serif;font-weight:800;font-size:{{ p.heroSize }}px;line-height:1;letter-spacing:.1em;text-transform:uppercase;background-image:{{ p.text }};-webkit-background-clip:text;background-clip:text;color:transparent;">{{ p.heroName }}</div>
+            </sc-if>
+            <sc-if value="{{ p.noTop }}">
+              <div style="font-family:'Oxanium',sans-serif;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#8d86a3;">No strikers listed</div>
+            </sc-if>
+            <sc-if value="{{ p.hasAlts }}">
+              <div style="display:flex;gap:4px;flex-wrap:nowrap;justify-content:center;">
+                <sc-for list="{{ p.alts }}" as="a" hint-placeholder-count="2">
+                  <div style="font-size:6.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e6e1f2;padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);">{{ a }}</div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ p.showRank }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:7.5px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:{{ p.accent }};">{{ p.rank }}</div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(180deg);box-sizing:border-box;border-radius:16px;padding:2px;background:{{ p.frame }};box-shadow:0 0 0 1px rgba(255,255,255,.04),0 12px 32px -10px {{ p.glow }};">
+      <div style="position:relative;width:100%;height:100%;box-sizing:border-box;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#110e1a 0%,#0a0810 100%);display:flex;flex-direction:column;">
+        <div style="position:absolute;inset:5px;border-radius:10px;border:1px solid {{ p.line }};pointer-events:none;z-index:4;"></div>
+        <div style="flex:none;height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0 14px;position:relative;z-index:3;">
+          <div style="font-family:'Oxanium',sans-serif;font-weight:800;font-size:{{ p.nameSize }}px;line-height:1.15;letter-spacing:.06em;text-decoration:{{ p.capDeco }};text-decoration-thickness:2px;padding-bottom:4px;margin-bottom:-4px;text-underline-offset:3px;text-transform:uppercase;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;background-image:{{ p.text }};-webkit-background-clip:text;background-clip:text;color:transparent;">{{ p.name }}</div>
+          <div style="display:flex;gap:2px;">
+            <sc-for list="{{ p.stars }}" as="s" hint-placeholder-count="5">
+              <svg viewBox="0 0 24 24" width="11" height="11" style="display:block;filter:{{ s.shadow }};"><polygon points="12,2.5 14.8,8.7 21.5,9.4 16.4,13.9 17.9,20.5 12,17.1 6.1,20.5 7.6,13.9 2.5,9.4 9.2,8.7" fill="{{ s.fill }}" stroke-linejoin="round"></polygon></svg>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1;min-height:0;margin:0 9px 9px;border-radius:8px;position:relative;overflow:hidden;background:{{ p.stage }};">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,transparent 0 18px,rgba(255,255,255,.035) 18px 19px);"></div>
+          <div style="position:absolute;left:50%;top:44%;width:180px;height:180px;transform:translate(-50%,-50%) rotate(45deg);border:1px solid {{ p.line }};opacity:.25;"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,8,16,.35) 0%,rgba(10,8,16,.8) 100%);"></div>
+          <sc-for list="{{ p.backPhotoList }}" as="u" hint-placeholder-count="0">
+            <div style="position:absolute;inset:0;background-image:url({{ u }});background-size:cover;background-position:center 20%;"></div>
+          </sc-for>
+          <sc-if value="{{ p.hasBack }}" hint-placeholder-val="{{ true }}">
+          <div style="position:relative;height:100%;box-sizing:border-box;padding:10px 10px 36px;display:flex;flex-direction:column;gap:9px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <div style="border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:5px 7px;display:flex;flex-direction:column;gap:2px;">
+                <div style="font-size:5.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#9d95b3;">Rank</div>
+                <div style="font-family:'Oxanium',sans-serif;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#f1eef8;">{{ p.rankText }}</div>
+              </div>
+              <div style="border-radius:6px;background:rgba(255,255,255,.06);border:1px solid {{ p.line }};padding:5px 7px;display:flex;flex-direction:column;gap:2px;">
+                <div style="font-size:5.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#9d95b3;">Peak rank</div>
+                <div style="font-family:'Oxanium',sans-serif;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:{{ p.accent }};">{{ p.peak }}</div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:6px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#9d95b3;"><span>Strikers</span><span style="color:{{ p.accent }};">{{ p.strikerCount }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:3px;">
+                <sc-for list="{{ p.strikers }}" as="m" hint-placeholder-count="6">
+                  <div style="font-size:6px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:2px 5px;border-radius:999px;color:{{ m.color }};background:{{ m.bg }};border:1px solid {{ m.border }};">{{ m.name }}</div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ p.noStrikers }}"><div style="font-size:7px;color:#8d86a3;">None listed</div></sc-if>
+            </div>
+            <div style="height:1px;background:{{ p.line }};opacity:.6;flex:none;"></div>
+            <div style="display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:6px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#9d95b3;"><span>Custom strikers</span><span style="color:{{ p.accent }};">{{ p.customCount }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:3px;">
+                <sc-for list="{{ p.customs }}" as="c" hint-placeholder-count="4">
+                  <div style="font-size:6px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1;padding:2px 5px;border-radius:999px;color:#e6e1f2;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);">{{ c }}</div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ p.noCustoms }}"><div style="font-size:7px;color:#8d86a3;">None owned</div></sc-if>
+            </div>
+          </div>
+          </sc-if>
+          <div style="position:absolute;left:0;right:0;bottom:9px;display:flex;justify-content:center;z-index:3;">
+            <button onClick="{{ p.onCaptain }}" aria-pressed="{{ p.isCap }}" style="font-family:'Oxanium',sans-serif;font-size:8px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;line-height:1;padding:6px 16px;border-radius:999px;cursor:pointer;border:1px solid {{ p.capBorder }};background:{{ p.capBg }};color:{{ p.capColor }};">Captain</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;240px&quot;,&quot;height&quot;:&quot;336px&quot;},&quot;p&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object&quot;}}">
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
