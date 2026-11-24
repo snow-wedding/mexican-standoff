@@ -356,7 +356,7 @@
         <div draggable="true" sc-camel-on-drag-start="{{ p.onDragStart }}" sc-camel-on-drag-end="{{ endDrag }}" style="position:relative;flex:none;cursor:grab;zoom:{{ zoom }};">
           <dc-import name="Player Card" p="{{ p }}" hint-size="240px,336px"></dc-import>
             <sc-if value="{{ editMode }}"><button sc-camel-on-click="{{ p.onEdit }}" aria-label="Edit player" title="Edit player" style="position:absolute;top:-8px;left:-8px;z-index:3;width:28px;height:28px;border-radius:50%;border:1px solid #c3a2ff;background:#1d1430;color:#e2d4ff;font-family:'Chakra Petch',sans-serif;font-size:14px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" style-hover="background:#2d1f4a;color:#fff;">✎</button></sc-if>
-            <sc-if value="{{ editMode }}"><button sc-camel-on-click="{{ p.onDelete }}" aria-label="Remove player" title="Remove player" style="position:absolute;top:-8px;right:-8px;z-index:3;width:28px;height:28px;border-radius:50%;border:1px solid #ff8a7a;background:#2a0d10;color:#ffb3a8;font-family:'Chakra Petch',sans-serif;font-size:16px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" style-hover="background:#4a1216;color:#fff;">×</button></sc-if>
+            <sc-if value="{{ editMode }}"><button sc-camel-on-click="{{ p.onArchive }}" aria-label="Archive player" title="Hide from the pool. Restore later from Archived players." style="position:absolute;top:-8px;right:-8px;z-index:3;height:28px;padding:0 10px;border-radius:999px;border:1px solid #ffc879;background:#2a1d08;color:#ffd9a3;font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-hover="background:#4a3210;color:#fff;">Archive</button></sc-if>
         </div>
       </sc-for>
       <sc-if value="{{ poolEmpty }}">
@@ -364,6 +364,28 @@
       </sc-if>
     </div>
   </div>
+
+  <sc-if value="{{ editMode }}">
+    <div style="display:flex;flex-direction:column;gap:14px;border-radius:18px;border:1px dashed var(--line);background:var(--fill);padding:18px;">
+      <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">
+        <div style="font-family:'Oxanium',sans-serif;font-weight:800;font-size:20px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);">Archived players</div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);">{{ archiveLabel }}</div>
+      </div>
+      <sc-if value="{{ archiveEmpty }}">
+        <div style="color:var(--faint);font-size:13px;">Nothing archived. Use Archive on a pool card to hide a player without deleting them.</div>
+      </sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        <sc-for list="{{ archived }}" as="a" hint-placeholder-count="0">
+          <div style="display:flex;align-items:center;gap:10px;padding:5px 5px 5px 14px;border-radius:999px;border:1px solid var(--line);background:var(--panel);">
+            <span style="font-size:13px;font-weight:700;color:var(--ink);">{{ a.name }}</span>
+            <span style="font-size:12px;color:var(--muted);">{{ a.starsLabel }}</span>
+            <button sc-camel-on-click="{{ a.onRestore }}" title="Put back in the player pool" style="font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px;cursor:pointer;border:1px solid #c3a2ff;background:#c3a2ff;color:#0a0810;" style-hover="background:#d6c1ff;border-color:#d6c1ff;">Restore</button>
+            <button sc-camel-on-click="{{ a.onDelete }}" aria-label="Delete permanently" title="Delete permanently" style="width:26px;height:26px;border-radius:50%;border:1px solid #ff8a7a;background:#2a0d10;color:#ffb3a8;font-family:'Chakra Petch',sans-serif;font-size:15px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;" style-hover="background:#4a1216;color:#fff;">×</button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script="" data-props="{&quot;showRank&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;tierColors&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;By stars&quot;,&quot;All gold&quot;,&quot;All violet&quot;],&quot;default&quot;:&quot;By stars&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
@@ -455,26 +477,31 @@ const RANKS = ['Bronze','Silver','Gold','Platinum','Diamond','Master','Grandmast
 const BAKED = '@@RE@@eyJhZGQiOltbIkJld2JzIiwzLCJTdGVsbGFyaXMsIEh1cnJpY2FuZSwgU2VyZW5pdGgiLCJTZXJlbml0aCwgU3RlbGxhcmlzLCBIdXJyaWNhbmUiLCIiLCIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sWyJFYmloYXJhIiwzLCJXZWxraW4sIEFxdWlsYSwgU2VyZW5pdGgiLCJTZXJlbml0aCwgV2Vsa2luLCBBcXVpbGEiLCIiLCIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sWyJhc2RmIiw0LCJTa3lyYWlkZXIsIFNlcmVuaXRoLCBXZWxraW4iLCJTa3lyYWlkZXIsIEFscGhhcmQsIFNlcmVuaXRoLCBQaW5ha2EiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBTdGVnbyIsIlNpbHZlciIsIkRpYW1vbmQiLHsic2hvdyI6dHJ1ZX1dLFsiTmFhdnlZdXVraWUiLDMsIkFscGhhcmQsIE1pa2lsbGphLCBQYW50aGVyIiwiU2t5cmFpZGVyLCBBbHlzbmVzLCBGcmV5ciIsIk1pa2lsbGphLCBTdGVnbywgUGluYWthIiwiUGxhdGludW0iLCJTaWx2ZXIiLHsic2hvdyI6dHJ1ZX1dLFsiYXNkZiIsNCwiQWxwaGFyZCwgU2VyZW5pdGgsIFN0ZWxsYXJpcyIsIlNreXJhaWRlciwgQWx5c25lcyIsIldlbGtpbiwgTWlraWxsamEiLCJQbGF0aW51bSIsIkRpYW1vbmQiLHsic2hvdyI6dHJ1ZX1dLFsiYmV3YnMiLDMsIlN0ZWxsYXJpcyIsIlN0ZWxsYXJpcywgSHVycmljYW5lIiwiIiwiIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLFsiZWJpaGFyYSIsMywiV2Vsa2luLCBBcXVpbGEsIFNlcmVuaXRoIiwiU2VyZW5pdGgsIFdlbGtpbiwgQXF1aWxhIiwiIiwiIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLFsiRGl2aW5lIiw0LCJXZWxraW4iLCIiLCIiLCJHcmFuZG1hc3RlciIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XV0sImRlbCI6WzQ3LDQ4LDQ5LDUyLDUwLDI0XSwiY2FwIjp7IlBob2VuaXhQbGF0IjpmYWxzZX0sImVkIjp7IjIiOlsiSHN1eWEiLDUsIlBhbnRoZXIsIFN0ZWxsYXJpcywgV2Vsa2luIiwiV2Vsa2luLCBQYW50aGVyLCBTdGVsbGFyaXMsIEZyZXlyLCBTdGVnbyIsIkluZmVybm8sIFdlbGtpbiwgUGFudGhlciwgU3RlbGxhcmlzLCBUcmljZXJhLCBMdW1pbmFlLCBOYXJ1a2FtaSIsIkluZGVzdHJ1Y3RpYmxlIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCI5IjpbIlNUQVJPIiw1LCJBbHBoYXJkLCBTa3lyYWlkZXIsIFRyaWNlcmEiLCJGYWxjb24sIFNreXJhaWRlciwgQWxwaGFyZCwgUGFudGhlciwgVHJpY2VyYSwgU3RlZ28iLCJGYWxjb24gQWNlLCBBbHBoYXJkIiwiR3JhbmRtYXN0ZXIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sIjExIjpbIlhhbHZlcmlzIiw0LCJQaW5ha2EsIE5hcnVrYW1pLCBMdW1pbmFlIiwiU2VyZW5pdGgsIEx1bWluYWUsIFBpbmFrYSwgTmFydWthbWkiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBJbmZlcm5vLCBUcmljZXJhLCBMdW1pbmFlLCBOYXJ1a2FtaSIsIkNoYW1waW9uIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCIxMiI6WyJMb3JkR0dWbGFkVFYiLDQsIkFscGhhcmQsIFRyaWNlcmEsIEx1bWluYWUiLCJGYWxjb24sIFNreXJhaWRlciwgQWxwaGFyZCwgVHJpY2VyYSwgU3RlZ28sIEx1bWluYWUiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBQYW50aGVyLCBTdGVsbGFyaXMsIFRyaWNlcmEsIEx1bWluYWUsIE5hcnVrYW1pIiwiR3JhbmRtYXN0ZXIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sIjE3IjpbIkxPUkRDT09LSUUiLDQsIkFscGhhcmQsIFdlbGtpbiwgSW5mZXJubyIsIkFscGhhcmQsIEluZmVybm8sIFdlbGtpbiwgTWlraWxsamEsIFBhbnRoZXIsIEFseXNuZXMsIFRyaWNlcmEiLCJGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkIiwiR2VuZXJhbCIsIkdlbmVyYWwiLHsic2hvdyI6dHJ1ZX1dLCIyMCI6WyJBdm9jYXRkbyIsNSwiTmFydWthbWksIEZhbGNvbiwgRnJleXIiLCJGYWxjb24sIFNreXJhaWRlciwgQWxwaGFyZCwgU2VyZW5pdGgsIFBhbnRoZXIsIFN0ZWxsYXJpcywgQWx5c25lcywgRnJleXIsIEh1cnJpY2FuZSwgVHJpY2VyYSwgU3RlZ28sIEx1bWluYWUsIFBpbmFrYSwgQXF1aWxhLCBOYXJ1a2FtaSwgTm9ybmUiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBQYW50aGVyLCBTdGVsbGFyaXMsIFRyaWNlcmEsIEx1bWluYWUsIE5hcnVrYW1pIiwiSW5kZXN0cnVjdGlibGUiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sIjIzIjpbIk1hZGFtTW9pc3R1ciIsMSwiQWx5c25lcyIsIkFseXNuZXMiLCIiLCJHZW5lcmFsIiwiR2VuZXJhbCIseyJzaG93Ijp0cnVlfV0sIjI5IjpbIk3DpHJ6IiwzLCJTdGVsbGFyaXMsIEFseXNuZXMsIEhlbCIsIlNreXJhaWRlciwgV2Vsa2luLCBTdGVsbGFyaXMsIEFseXNuZXMsIEZyZXlyLCBIZWwiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBXZWxraW4sIFBhbnRoZXIsIFN0ZWxsYXJpcywgTHVtaW5hZSIsIkdyYW5kbWFzdGVyIiwiTGVnZW5kYXJ5Iix7InNob3ciOnRydWV9XSwiMzAiOlsiQmFiYmFsb28iLDQsIkluZmVybm8sIEx1bWluYWUsIFRyaWNlcmEiLCJTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBBbHlzbmVzLCBIdXJyaWNhbmUsIFRyaWNlcmEsIFN0ZWdvLCBMdW1pbmFlLCBQaW5ha2EiLCJGYWxjb24gQWNlLCBBbHBoYXJkLCBTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBUcmljZXJhLCBMdW1pbmFlLCBOYXJ1a2FtaSIsIkNoYW1waW9uIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCIzNiI6WyJSYXdRdWljayIsNCwiSW5mZXJubywgU2VyZW5pdGgsIEh1cnJpY2FuZSIsIkZhbGNvbiwgQWxwaGFyZCwgU2VyZW5pdGgsIEluZmVybm8sIEh1cnJpY2FuZSwgVHJpY2VyYSwgU3RlZ28sIEhlbCIsIiIsIkNoYW1waW9uIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCIzOCI6WyJLbGFrIiwzLCJGYWxjb24sIEluZmVybm8sIFdlbGtpbiIsIkZhbGNvbiwgU2t5cmFpZGVyLCBJbmZlcm5vLCBXZWxraW4sIE1pa2lsbGphLCBUcmljZXJhLCBTdGVnbywgTHVtaW5hZSIsIkZhbGNvbiBBY2UsIEluZmVybm8sIFdlbGtpbiwgVHJpY2VyYSwgTmFydWthbWkiLCJDaGFtcGlvbiIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XSwiMzkiOlsiUm9ib2ZzIiw0LCJQYW50aGVyLCBXZWxraW4sIEFseXNuZXMiLCJBbHBoYXJkLCBXZWxraW4sIFBhbnRoZXIsIEFseXNuZXMsIFRyaWNlcmEsIFN0ZWdvLCBIZWwiLCJUcmljZXJhLCBMdW1pbmFlIiwiR2VuZXJhbCIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XSwiNDQiOlsiSElOT01BUlUiLDUsIkluZmVybm8sIE1pa2lsbGphLCBIdXJyaWNhbmUiLCJGYWxjb24sIFNlcmVuaXRoLCBJbmZlcm5vLCBXZWxraW4sIE1pa2lsbGphLCBIdXJyaWNhbmUsIFRyaWNlcmEsIEFxdWlsYSIsIkZhbGNvbiBBY2UsIEZhbGNvbiBDbG91ZHBpZXJjZXIsIEFscGhhcmQsIFNlcmVuaXRoLCBJbmZlcm5vLCBXZWxraW4sIFBhbnRoZXIsIFN0ZWxsYXJpcywgVHJpY2VyYSwgTHVtaW5hZSwgTmFydWthbWkiLCJJbmRlc3RydWN0aWJsZSIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XSwiNDciOlsiTm90QUJyb3duQ293IiwxLCJUcmljZXJhIiwiVHJpY2VyYSIsIlRyaWNlcmEiLCJJbmRlc3RydWN0aWJsZSIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWUsInBob3RvIjoidXBsb2Fkcy9tZWNocy9ub3RhYnJvd25jb3cud2VicCJ9XSwiNTEiOlsiTmFhdnlZdXVraWUiLDUsIkFscGhhcmQsIE1pa2lsbGphLCBQYW50aGVyIiwiU2t5cmFpZGVyLCBBbHlzbmVzLCBGcmV5ciIsIk1pa2lsbGphLCBTdGVnbywgUGluYWthIiwiUGxhdGludW0iLCJTaWx2ZXIiLHsic2hvdyI6dHJ1ZX1dfX0=@@RE@@';
 const EKEY = 'nstc-roster-edits-v1';
 const lc = s => String(s).toLowerCase();
-const readEd = s => { try { const o = JSON.parse(s || '{}') || {}; const cap = {}; if (o.cap && typeof o.cap === 'object') Object.keys(o.cap).forEach(k => { cap[k] = !!o.cap[k]; }); return { add: Array.isArray(o.add) ? o.add.filter(r => Array.isArray(r) && r[0]) : [], del: Array.isArray(o.del) ? o.del.filter(n => Number.isInteger(n)) : [], cap, ed: (() => { const ed = {}; if (o.ed && typeof o.ed === 'object') Object.keys(o.ed).forEach(k => { if (/^\d+$/.test(k) && Array.isArray(o.ed[k]) && o.ed[k][0]) ed[k] = o.ed[k]; }); return ed; })() }; } catch (e) { return { add: [], del: [], cap: {}, ed: {} }; } };
+const readEd = s => { try { const o = JSON.parse(s || '{}') || {}; const cap = {}; if (o.cap && typeof o.cap === 'object') Object.keys(o.cap).forEach(k => { cap[k] = !!o.cap[k]; }); return { add: Array.isArray(o.add) ? o.add.filter(r => Array.isArray(r) && r[0]) : [], del: Array.isArray(o.del) ? o.del.filter(n => Number.isInteger(n)) : [], cap, ed: (() => { const ed = {}; if (o.ed && typeof o.ed === 'object') Object.keys(o.ed).forEach(k => { if (/^\d+$/.test(k) && Array.isArray(o.ed[k]) && o.ed[k][0]) ed[k] = o.ed[k]; }); return ed; })(), arc: (() => { const arc = {}; if (o.arc && typeof o.arc === 'object') Object.keys(o.arc).forEach(k => { if (/^\d+$/.test(k)) arc[k] = !!o.arc[k]; }); return arc; })() }; } catch (e) { return { add: [], del: [], cap: {}, ed: {}, arc: {} }; } };
+// arc = archived players: { rowIndex: true }. Archived players are hidden from the pool but kept so they can be restored.
 const BASE_ED = readEd((() => { try { return decodeURIComponent(escape(atob(BAKED.slice(6, -6)))); } catch (e) { return ''; } })());
-let LOCAL_ED = { add: [], del: [], cap: {}, ed: {} };
+let LOCAL_ED = { add: [], del: [], cap: {}, ed: {}, arc: {} };
 try { LOCAL_ED = readEd(localStorage.getItem(EKEY)); } catch (e) {}
 const saveLocal = () => { try { localStorage.setItem(EKEY, JSON.stringify(LOCAL_ED)); } catch (e) {} };
 const bakedRows = () => new Set(BASE_ED.add.map(r => JSON.stringify(r)));
-const merged = () => { const b = bakedRows(); return { add: [...BASE_ED.add, ...LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r)))], del: [...new Set([...BASE_ED.del, ...LOCAL_ED.del])], cap: { ...BASE_ED.cap, ...LOCAL_ED.cap }, ed: { ...BASE_ED.ed, ...LOCAL_ED.ed } }; };
+const merged = () => { const b = bakedRows(); return { add: [...BASE_ED.add, ...LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r)))], del: [...new Set([...BASE_ED.del, ...LOCAL_ED.del])], cap: { ...BASE_ED.cap, ...LOCAL_ED.cap }, ed: { ...BASE_ED.ed, ...LOCAL_ED.ed }, arc: { ...BASE_ED.arc, ...LOCAL_ED.arc } }; };
 const edPending = () => Object.keys(LOCAL_ED.ed).filter(k => JSON.stringify(LOCAL_ED.ed[k]) !== JSON.stringify(BASE_ED.ed[k]));
+const arcPending = () => Object.keys(LOCAL_ED.arc).filter(k => LOCAL_ED.arc[k] !== !!BASE_ED.arc[k]);
 const baseCap = n => n in BASE_ED.cap ? BASE_ED.cap[n] : CAPTAINS.has(lc(n));
 const isCap = n => n in LOCAL_ED.cap ? LOCAL_ED.cap[n] : baseCap(n);
-const pendingCount = () => { const b = bakedRows(), bd = new Set(BASE_ED.del); return LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r))).length + LOCAL_ED.del.filter(i => !bd.has(i)).length + Object.keys(LOCAL_ED.cap).filter(n => LOCAL_ED.cap[n] !== baseCap(n)).length + edPending().length; };
-let ALL = [], SORTED = [], IDX = {}, NAMES = new Set();
+const pendingCount = () => { const b = bakedRows(), bd = new Set(BASE_ED.del); return LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r))).length + LOCAL_ED.del.filter(i => !bd.has(i)).length + Object.keys(LOCAL_ED.cap).filter(n => LOCAL_ED.cap[n] !== baseCap(n)).length + edPending().length + arcPending().length; };
+// IDX/SORTED/NAMES = active players only. ARC/ARCHIVED = archived players (name -> row index, and [row, index] pairs).
+let ALL = [], SORTED = [], IDX = {}, NAMES = new Set(), ARC = {}, ARCHIVED = [];
 const build = () => {
   const m = merged();
   ALL = [...RAW, ...m.add].map((r, i) => m.ed[i] || r);
   const del = new Set(m.del);
   RAW.forEach((r, i) => { if (REMOVED.has(r[0])) del.add(i); });
-  IDX = {}; ALL.forEach((r, i) => { if (!del.has(i)) IDX[r[0]] = i; });
+  IDX = {}; ARC = {};
+  ALL.forEach((r, i) => { if (!del.has(i)) (m.arc[i] ? ARC : IDX)[r[0]] = i; });
   SORTED = ALL.filter((r, i) => IDX[r[0]] === i).sort(SORTS.stars);
   NAMES = new Set(SORTED.map(r => r[0]));
+  ARCHIVED = ALL.map((r, i) => [r, i]).filter(([r, i]) => ARC[r[0]] === i && !(r[0] in IDX)).sort((a, b) => cmpName(a[0], b[0]));
 };
 build();
 
@@ -494,14 +521,15 @@ const rosterParam = () => {
   const b = bakedRows(), bd = new Set(BASE_ED.del);
   const add = LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r))), del = LOCAL_ED.del.filter(i => !bd.has(i));
   const ed = {}; edPending().forEach(k => { ed[k] = LOCAL_ED.ed[k]; });
-  return add.length || del.length || Object.keys(ed).length ? 'r=' + b64u(JSON.stringify({ add, del, ed })) : '';
+  const arc = {}; arcPending().forEach(k => { arc[k] = LOCAL_ED.arc[k]; });
+  return add.length || del.length || Object.keys(ed).length || Object.keys(arc).length ? 'r=' + b64u(JSON.stringify({ add, del, ed, arc })) : '';
 };
 const applyShared = hash => {
   const r = hash.match(/[#&]r=([^&]*)/);
   if (r && r[1]) {
     try {
       const inc = readEd(unb64u(r[1])), have = new Set(LOCAL_ED.add.map(x => JSON.stringify(x))), bk = bakedRows();
-      LOCAL_ED = { ...LOCAL_ED, add: [...LOCAL_ED.add, ...inc.add.filter(x => !have.has(JSON.stringify(x)) && !bk.has(JSON.stringify(x)))], del: [...new Set([...LOCAL_ED.del, ...inc.del])], ed: { ...LOCAL_ED.ed, ...inc.ed } };
+      LOCAL_ED = { ...LOCAL_ED, add: [...LOCAL_ED.add, ...inc.add.filter(x => !have.has(JSON.stringify(x)) && !bk.has(JSON.stringify(x)))], del: [...new Set([...LOCAL_ED.del, ...inc.del])], ed: { ...LOCAL_ED.ed, ...inc.ed }, arc: { ...LOCAL_ED.arc, ...inc.arc } };
       saveLocal(); build();
     } catch (e) {}
   }
@@ -563,10 +591,17 @@ class Component extends DCLogic {
     }));
   }
   pruneTeams() { this.setTeams(ts => ts.map(t => ({ ...t, members: t.members.filter(m => NAMES.has(m)) }))); }
-  removePlayer(name) {
-    const i = IDX[name];
-    if (i == null || !confirm('Remove ' + name + ' from the roster?')) return;
-    LOCAL_ED = { ...LOCAL_ED, del: [...LOCAL_ED.del, i] }; saveLocal(); build();
+  // Archive (on=true) hides a player from the pool; restore (on=false) brings them back.
+  setArchived(i, on) {
+    const arc = { ...LOCAL_ED.arc };
+    if (on === !!BASE_ED.arc[i]) delete arc[i]; else arc[i] = on;
+    LOCAL_ED = { ...LOCAL_ED, arc }; saveLocal(); build();
+    this.setState({ dl: false }); this.pruneTeams();
+  }
+  deleteForever(i, name) {
+    if (!confirm('Permanently delete ' + name + ' from the roster? This removes them instead of archiving.')) return;
+    const arc = { ...LOCAL_ED.arc }; delete arc[i];
+    LOCAL_ED = { ...LOCAL_ED, arc, del: [...LOCAL_ED.del, i] }; saveLocal(); build();
     this.setState({ dl: false }); this.pruneTeams();
   }
   toggleCaptain(name) {
@@ -580,6 +615,7 @@ class Component extends DCLogic {
     if (!name) return this.setState({ form: { ...f, err: 'Enter a player name.' } });
     const editing = f.editIdx != null, old = editing ? ALL[f.editIdx][0] : null;
     if ([...NAMES].some(n => n !== old && lc(n) === lc(name))) return this.setState({ form: { ...f, err: 'That name is already on the roster.' } });
+    if (Object.keys(ARC).some(n => n !== old && lc(n) === lc(name))) return this.setState({ form: { ...f, err: 'That player is archived. Restore them from Archived players instead.' } });
     const ord = (list, all) => withExtras(all, list).filter(n => list.includes(n)).join(', ');
     const fields = [name, f.stars, [...new Set(f.top.filter(Boolean))].join(', '), ord(f.strikers, STRIKERS), ord(f.customs, CUSTOMS), f.rank, f.peak];
     if (editing) {
@@ -632,7 +668,7 @@ class Component extends DCLogic {
       name, rank, peak, showRank, rankText: rank,
       rot: this.state.flipped[name] ? 'rotateY(180deg)' : 'rotateY(0deg)',
       flip: () => this.flip(name),
-      onDelete: e => { e.stopPropagation(); this.removePlayer(name); },
+      onArchive: e => { e.stopPropagation(); if (IDX[name] != null) this.setArchived(IDX[name], true); },
       onEdit: e => { e.stopPropagation(); if (IDX[name] != null) this.setState({ form: formFrom(IDX[name]) }); },
       onUnassign: e => { e.stopPropagation(); this.setTeams(ts => ts.map(x => ({ ...x, members: x.members.filter(m => m !== name) }))); },
       onDragStart: e => { e.dataTransfer.setData('text/plain', name); e.dataTransfer.effectAllowed = 'move'; setTimeout(() => this.setState({ drag: name }), 0); },
@@ -696,11 +732,14 @@ class Component extends DCLogic {
       toggleEdit: () => this.setState(s => ({ editMode: !s.editMode })),
       editNote: this.state.dl ? 'Downloaded index.html. Upload it to GitHub to publish the changes.'
         : pend ? pend + (pend === 1 ? ' change is' : ' changes are') + ' saved in this browser only. Download the site file and upload it to GitHub to publish.'
-        : 'Add players, edit them with the ✎ on each card, or remove them with the ×. Changes stay in this browser until you download the site file and upload it to GitHub.',
-      hasLocal: !!(LOCAL_ED.add.length || LOCAL_ED.del.length || Object.keys(LOCAL_ED.ed).length),
+        : 'Add players, edit them with the ✎ on each card, or hide them from the pool with Archive (restore them below). Changes stay in this browser until you download the site file and upload it to GitHub.',
+      hasLocal: !!(LOCAL_ED.add.length || LOCAL_ED.del.length || Object.keys(LOCAL_ED.ed).length || Object.keys(LOCAL_ED.arc).length),
+      archived: ARCHIVED.map(([r, i]) => ({ name: r[0], starsLabel: r[1] + '★', onRestore: () => this.setArchived(i, false), onDelete: () => this.deleteForever(i, r[0]) })),
+      archiveEmpty: !ARCHIVED.length,
+      archiveLabel: ARCHIVED.length + (ARCHIVED.length === 1 ? ' player' : ' players'),
       formTitle: f.editIdx != null ? 'Edit player' : 'Add player',
       saveLabel: f.editIdx != null ? 'Save changes' : 'Add player',
-      discardLocal: () => { if (!confirm('Discard roster changes made in this browser?')) return; LOCAL_ED = { add: [], del: [], cap: {}, ed: {} }; saveLocal(); build(); this.setState({ dl: false }); this.pruneTeams(); },
+      discardLocal: () => { if (!confirm('Discard roster changes made in this browser?')) return; LOCAL_ED = { add: [], del: [], cap: {}, ed: {}, arc: {} }; saveLocal(); build(); this.setState({ dl: false }); this.pruneTeams(); },
       downloadSite: () => this.downloadSite(),
       formOpen: !!this.state.form,
       openForm: () => this.setState({ form: blankForm() }),
