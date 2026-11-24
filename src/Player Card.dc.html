@@ -119,8 +119,9 @@
             </div>
           </div>
           </sc-if>
-          <div style="position:absolute;left:0;right:0;bottom:9px;display:flex;justify-content:center;z-index:3;">
-            <button onClick="{{ p.onCaptain }}" aria-pressed="{{ p.isCap }}" style="font-family:'Oxanium',sans-serif;font-size:8px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;line-height:1;padding:6px 16px;border-radius:999px;cursor:pointer;border:1px solid {{ p.capBorder }};background:{{ p.capBg }};color:{{ p.capColor }};">Captain</button>
+          <div style="position:absolute;left:0;right:0;bottom:9px;display:flex;justify-content:center;gap:6px;z-index:3;">
+            <button onClick="{{ p.onCaptain }}" aria-pressed="{{ p.isCap }}" style="font-family:'Oxanium',sans-serif;font-size:8px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;line-height:1;padding:6px 12px;border-radius:999px;cursor:pointer;border:1px solid {{ p.capBorder }};background:{{ p.capBg }};color:{{ p.capColor }};">Captain</button>
+            <button onClick="{{ p.onCaster }}" aria-pressed="{{ p.isCas }}" style="font-family:'Oxanium',sans-serif;font-size:8px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;line-height:1;padding:6px 12px;border-radius:999px;cursor:pointer;border:1px solid {{ p.casBorder }};background:{{ p.casBg }};color:{{ p.casColor }};">Caster</button>
           </div>
         </div>
       </div>

@@ -400,6 +400,9 @@ const F = {
 const ALLC = "Falcon Ace, Falcon Cloudpiercer, Welkin, Tricera, Narukami, Alphard, Panther, Stellaris, Serenith, Inferno, Luminae";
 // [name, stars, top3, strikers, customs, rank, peak] — from Signups sheet; duplicate rows (Aswg35, EYEZZ) keep the first entry
 const CAPTAINS = new Set(['hinomaru','prao','ponch','avunew','avocatdo','j044']);
+// Casters get the caster card: their own art if the row has casterPhoto/casterBack, otherwise the default caster art.
+const CASTERS = new Set(['festival','pred']);
+const CASTER_FRONT = 'uploads/caster/caster-front.svg', CASTER_BACK = 'uploads/caster/caster-back.svg';
 const RAW = [
 ["Ponch",5,"Serenith, Hurricane, Hel","Serenith, Alysnes, Freyr, Hurricane, Tricera, Stego, Narukami, Hel","","Champion","Indestructible"],
 ["zDemoncake",5,"Norne, Aquila, Serenith","Falcon, Skyraider, Alphard, Serenith, Inferno, Welkin, Panther, Mikillja, Stellaris, Alysnes, Freyr, Hurricane, Tricera, Stego, Luminae, Pinaka, Narukami, Aquila, Norne, Hel","Welkin, Panther, Alphard, Stellaris, Falcon Ace, Falcon Cloudpiercer, Narukami, Tricera, Inferno, Luminae, Serenith","Champion","Indestructible"],
@@ -442,8 +445,8 @@ const RAW = [
 ["Klak",4,"Falcon, Inferno, Welkin","Falcon, Skyraider, Inferno, Welkin, Mikillja, Tricera, Stego, Luminae","Falcon Ace, Welkin, Tricera, Narukami, Inferno","Champion","Indestructible"],
 ["Robofs",3,"Panther, Welkin, Alysnes","Alphard, Welkin, Panther, Alysnes, Tricera, Stego, Hel","Tricera, Luminae","General","Indestructible"],
 ["Avunew",5,"Mikillja, Welkin, Freyr","Serenith, Welkin, Mikillja, Alysnes, Tricera, Luminae","Tricera, Luminae","Champion","Indestructible"],
-["Festival",1,"Caster","","","","",{blank:true,photo:'uploads/mechs/jester2.png',backPhoto:'uploads/mechs/jester.png'}],
-["Pred",1,"Caster","","","","",{blank:true,photo:'uploads/mechs/pred2.png',backPhoto:'uploads/mechs/pred.png'}],
+["Festival",1,"Caster","","","","",{casterPhoto:'uploads/mechs/jester2.png',casterBack:'uploads/mechs/jester.png'}],
+["Pred",1,"Caster","","","","",{casterPhoto:'uploads/mechs/pred2.png',casterBack:'uploads/mechs/pred.png'}],
 ["Domino",1,"Caster","Serenith, Aquila","Serenith, Tricera, Narukami","Unranked","Indestructible",{show:true,photo:'uploads/mechs/domino.png',rainbow:true}],
 ["HINOMARU",6,"Inferno, Mikillja, Hurricane","Falcon, Serenith, Inferno, Welkin, Mikillja, Hurricane, Tricera, Aquila",ALLC,"Indestructible","Indestructible"],
 ["VANTASYNRGY",2,"Alysnes, Welkin, Hurricane","Alphard, Inferno, Welkin, Alysnes, Hurricane, Tricera, Stego","Falcon Cloudpiercer, Welkin, Tricera, Narukami, Alphard, Panther, Serenith, Inferno, Luminae","General","Indestructible"],
@@ -477,19 +480,21 @@ const RANKS = ['Bronze','Silver','Gold','Platinum','Diamond','Master','Grandmast
 const BAKED = '@@RE@@eyJhZGQiOltbIkJld2JzIiwzLCJTdGVsbGFyaXMsIEh1cnJpY2FuZSwgU2VyZW5pdGgiLCJTZXJlbml0aCwgU3RlbGxhcmlzLCBIdXJyaWNhbmUiLCIiLCIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sWyJFYmloYXJhIiwzLCJXZWxraW4sIEFxdWlsYSwgU2VyZW5pdGgiLCJTZXJlbml0aCwgV2Vsa2luLCBBcXVpbGEiLCIiLCIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sWyJhc2RmIiw0LCJTa3lyYWlkZXIsIFNlcmVuaXRoLCBXZWxraW4iLCJTa3lyYWlkZXIsIEFscGhhcmQsIFNlcmVuaXRoLCBQaW5ha2EiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBTdGVnbyIsIlNpbHZlciIsIkRpYW1vbmQiLHsic2hvdyI6dHJ1ZX1dLFsiTmFhdnlZdXVraWUiLDMsIkFscGhhcmQsIE1pa2lsbGphLCBQYW50aGVyIiwiU2t5cmFpZGVyLCBBbHlzbmVzLCBGcmV5ciIsIk1pa2lsbGphLCBTdGVnbywgUGluYWthIiwiUGxhdGludW0iLCJTaWx2ZXIiLHsic2hvdyI6dHJ1ZX1dLFsiYXNkZiIsNCwiQWxwaGFyZCwgU2VyZW5pdGgsIFN0ZWxsYXJpcyIsIlNreXJhaWRlciwgQWx5c25lcyIsIldlbGtpbiwgTWlraWxsamEiLCJQbGF0aW51bSIsIkRpYW1vbmQiLHsic2hvdyI6dHJ1ZX1dLFsiYmV3YnMiLDMsIlN0ZWxsYXJpcyIsIlN0ZWxsYXJpcywgSHVycmljYW5lIiwiIiwiIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLFsiZWJpaGFyYSIsMywiV2Vsa2luLCBBcXVpbGEsIFNlcmVuaXRoIiwiU2VyZW5pdGgsIFdlbGtpbiwgQXF1aWxhIiwiIiwiIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLFsiRGl2aW5lIiw0LCJXZWxraW4iLCIiLCIiLCJHcmFuZG1hc3RlciIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XV0sImRlbCI6WzQ3LDQ4LDQ5LDUyLDUwLDI0XSwiY2FwIjp7IlBob2VuaXhQbGF0IjpmYWxzZX0sImVkIjp7IjIiOlsiSHN1eWEiLDUsIlBhbnRoZXIsIFN0ZWxsYXJpcywgV2Vsa2luIiwiV2Vsa2luLCBQYW50aGVyLCBTdGVsbGFyaXMsIEZyZXlyLCBTdGVnbyIsIkluZmVybm8sIFdlbGtpbiwgUGFudGhlciwgU3RlbGxhcmlzLCBUcmljZXJhLCBMdW1pbmFlLCBOYXJ1a2FtaSIsIkluZGVzdHJ1Y3RpYmxlIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCI5IjpbIlNUQVJPIiw1LCJBbHBoYXJkLCBTa3lyYWlkZXIsIFRyaWNlcmEiLCJGYWxjb24sIFNreXJhaWRlciwgQWxwaGFyZCwgUGFudGhlciwgVHJpY2VyYSwgU3RlZ28iLCJGYWxjb24gQWNlLCBBbHBoYXJkIiwiR3JhbmRtYXN0ZXIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sIjExIjpbIlhhbHZlcmlzIiw0LCJQaW5ha2EsIE5hcnVrYW1pLCBMdW1pbmFlIiwiU2VyZW5pdGgsIEx1bWluYWUsIFBpbmFrYSwgTmFydWthbWkiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBJbmZlcm5vLCBUcmljZXJhLCBMdW1pbmFlLCBOYXJ1a2FtaSIsIkNoYW1waW9uIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCIxMiI6WyJMb3JkR0dWbGFkVFYiLDQsIkFscGhhcmQsIFRyaWNlcmEsIEx1bWluYWUiLCJGYWxjb24sIFNreXJhaWRlciwgQWxwaGFyZCwgVHJpY2VyYSwgU3RlZ28sIEx1bWluYWUiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBQYW50aGVyLCBTdGVsbGFyaXMsIFRyaWNlcmEsIEx1bWluYWUsIE5hcnVrYW1pIiwiR3JhbmRtYXN0ZXIiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sIjE3IjpbIkxPUkRDT09LSUUiLDQsIkFscGhhcmQsIFdlbGtpbiwgSW5mZXJubyIsIkFscGhhcmQsIEluZmVybm8sIFdlbGtpbiwgTWlraWxsamEsIFBhbnRoZXIsIEFseXNuZXMsIFRyaWNlcmEiLCJGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkIiwiR2VuZXJhbCIsIkdlbmVyYWwiLHsic2hvdyI6dHJ1ZX1dLCIyMCI6WyJBdm9jYXRkbyIsNSwiTmFydWthbWksIEZhbGNvbiwgRnJleXIiLCJGYWxjb24sIFNreXJhaWRlciwgQWxwaGFyZCwgU2VyZW5pdGgsIFBhbnRoZXIsIFN0ZWxsYXJpcywgQWx5c25lcywgRnJleXIsIEh1cnJpY2FuZSwgVHJpY2VyYSwgU3RlZ28sIEx1bWluYWUsIFBpbmFrYSwgQXF1aWxhLCBOYXJ1a2FtaSwgTm9ybmUiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBQYW50aGVyLCBTdGVsbGFyaXMsIFRyaWNlcmEsIEx1bWluYWUsIE5hcnVrYW1pIiwiSW5kZXN0cnVjdGlibGUiLCJJbmRlc3RydWN0aWJsZSIseyJzaG93Ijp0cnVlfV0sIjIzIjpbIk1hZGFtTW9pc3R1ciIsMSwiQWx5c25lcyIsIkFseXNuZXMiLCIiLCJHZW5lcmFsIiwiR2VuZXJhbCIseyJzaG93Ijp0cnVlfV0sIjI5IjpbIk3DpHJ6IiwzLCJTdGVsbGFyaXMsIEFseXNuZXMsIEhlbCIsIlNreXJhaWRlciwgV2Vsa2luLCBTdGVsbGFyaXMsIEFseXNuZXMsIEZyZXlyLCBIZWwiLCJGYWxjb24gQWNlLCBGYWxjb24gQ2xvdWRwaWVyY2VyLCBBbHBoYXJkLCBXZWxraW4sIFBhbnRoZXIsIFN0ZWxsYXJpcywgTHVtaW5hZSIsIkdyYW5kbWFzdGVyIiwiTGVnZW5kYXJ5Iix7InNob3ciOnRydWV9XSwiMzAiOlsiQmFiYmFsb28iLDQsIkluZmVybm8sIEx1bWluYWUsIFRyaWNlcmEiLCJTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBBbHlzbmVzLCBIdXJyaWNhbmUsIFRyaWNlcmEsIFN0ZWdvLCBMdW1pbmFlLCBQaW5ha2EiLCJGYWxjb24gQWNlLCBBbHBoYXJkLCBTZXJlbml0aCwgSW5mZXJubywgV2Vsa2luLCBUcmljZXJhLCBMdW1pbmFlLCBOYXJ1a2FtaSIsIkNoYW1waW9uIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCIzNiI6WyJSYXdRdWljayIsNCwiSW5mZXJubywgU2VyZW5pdGgsIEh1cnJpY2FuZSIsIkZhbGNvbiwgQWxwaGFyZCwgU2VyZW5pdGgsIEluZmVybm8sIEh1cnJpY2FuZSwgVHJpY2VyYSwgU3RlZ28sIEhlbCIsIiIsIkNoYW1waW9uIiwiSW5kZXN0cnVjdGlibGUiLHsic2hvdyI6dHJ1ZX1dLCIzOCI6WyJLbGFrIiwzLCJGYWxjb24sIEluZmVybm8sIFdlbGtpbiIsIkZhbGNvbiwgU2t5cmFpZGVyLCBJbmZlcm5vLCBXZWxraW4sIE1pa2lsbGphLCBUcmljZXJhLCBTdGVnbywgTHVtaW5hZSIsIkZhbGNvbiBBY2UsIEluZmVybm8sIFdlbGtpbiwgVHJpY2VyYSwgTmFydWthbWkiLCJDaGFtcGlvbiIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XSwiMzkiOlsiUm9ib2ZzIiw0LCJQYW50aGVyLCBXZWxraW4sIEFseXNuZXMiLCJBbHBoYXJkLCBXZWxraW4sIFBhbnRoZXIsIEFseXNuZXMsIFRyaWNlcmEsIFN0ZWdvLCBIZWwiLCJUcmljZXJhLCBMdW1pbmFlIiwiR2VuZXJhbCIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XSwiNDQiOlsiSElOT01BUlUiLDUsIkluZmVybm8sIE1pa2lsbGphLCBIdXJyaWNhbmUiLCJGYWxjb24sIFNlcmVuaXRoLCBJbmZlcm5vLCBXZWxraW4sIE1pa2lsbGphLCBIdXJyaWNhbmUsIFRyaWNlcmEsIEFxdWlsYSIsIkZhbGNvbiBBY2UsIEZhbGNvbiBDbG91ZHBpZXJjZXIsIEFscGhhcmQsIFNlcmVuaXRoLCBJbmZlcm5vLCBXZWxraW4sIFBhbnRoZXIsIFN0ZWxsYXJpcywgVHJpY2VyYSwgTHVtaW5hZSwgTmFydWthbWkiLCJJbmRlc3RydWN0aWJsZSIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWV9XSwiNDciOlsiTm90QUJyb3duQ293IiwxLCJUcmljZXJhIiwiVHJpY2VyYSIsIlRyaWNlcmEiLCJJbmRlc3RydWN0aWJsZSIsIkluZGVzdHJ1Y3RpYmxlIix7InNob3ciOnRydWUsInBob3RvIjoidXBsb2Fkcy9tZWNocy9ub3RhYnJvd25jb3cud2VicCJ9XSwiNTEiOlsiTmFhdnlZdXVraWUiLDUsIkFscGhhcmQsIE1pa2lsbGphLCBQYW50aGVyIiwiU2t5cmFpZGVyLCBBbHlzbmVzLCBGcmV5ciIsIk1pa2lsbGphLCBTdGVnbywgUGluYWthIiwiUGxhdGludW0iLCJTaWx2ZXIiLHsic2hvdyI6dHJ1ZX1dfX0=@@RE@@';
 const EKEY = 'nstc-roster-edits-v1';
 const lc = s => String(s).toLowerCase();
-const readEd = s => { try { const o = JSON.parse(s || '{}') || {}; const cap = {}; if (o.cap && typeof o.cap === 'object') Object.keys(o.cap).forEach(k => { cap[k] = !!o.cap[k]; }); return { add: Array.isArray(o.add) ? o.add.filter(r => Array.isArray(r) && r[0]) : [], del: Array.isArray(o.del) ? o.del.filter(n => Number.isInteger(n)) : [], cap, ed: (() => { const ed = {}; if (o.ed && typeof o.ed === 'object') Object.keys(o.ed).forEach(k => { if (/^\d+$/.test(k) && Array.isArray(o.ed[k]) && o.ed[k][0]) ed[k] = o.ed[k]; }); return ed; })(), arc: (() => { const arc = {}; if (o.arc && typeof o.arc === 'object') Object.keys(o.arc).forEach(k => { if (/^\d+$/.test(k)) arc[k] = !!o.arc[k]; }); return arc; })() }; } catch (e) { return { add: [], del: [], cap: {}, ed: {}, arc: {} }; } };
+const readEd = s => { try { const o = JSON.parse(s || '{}') || {}; const cap = {}, cas = {}; if (o.cap && typeof o.cap === 'object') Object.keys(o.cap).forEach(k => { cap[k] = !!o.cap[k]; }); if (o.cas && typeof o.cas === 'object') Object.keys(o.cas).forEach(k => { cas[k] = !!o.cas[k]; }); return { add: Array.isArray(o.add) ? o.add.filter(r => Array.isArray(r) && r[0]) : [], del: Array.isArray(o.del) ? o.del.filter(n => Number.isInteger(n)) : [], cap, cas, ed: (() => { const ed = {}; if (o.ed && typeof o.ed === 'object') Object.keys(o.ed).forEach(k => { if (/^\d+$/.test(k) && Array.isArray(o.ed[k]) && o.ed[k][0]) ed[k] = o.ed[k]; }); return ed; })(), arc: (() => { const arc = {}; if (o.arc && typeof o.arc === 'object') Object.keys(o.arc).forEach(k => { if (/^\d+$/.test(k)) arc[k] = !!o.arc[k]; }); return arc; })() }; } catch (e) { return { add: [], del: [], cap: {}, cas: {}, ed: {}, arc: {} }; } };
 // arc = archived players: { rowIndex: true }. Archived players are hidden from the pool but kept so they can be restored.
 const BASE_ED = readEd((() => { try { return decodeURIComponent(escape(atob(BAKED.slice(6, -6)))); } catch (e) { return ''; } })());
-let LOCAL_ED = { add: [], del: [], cap: {}, ed: {}, arc: {} };
+let LOCAL_ED = { add: [], del: [], cap: {}, cas: {}, ed: {}, arc: {} };
 try { LOCAL_ED = readEd(localStorage.getItem(EKEY)); } catch (e) {}
 const saveLocal = () => { try { localStorage.setItem(EKEY, JSON.stringify(LOCAL_ED)); } catch (e) {} };
 const bakedRows = () => new Set(BASE_ED.add.map(r => JSON.stringify(r)));
-const merged = () => { const b = bakedRows(); return { add: [...BASE_ED.add, ...LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r)))], del: [...new Set([...BASE_ED.del, ...LOCAL_ED.del])], cap: { ...BASE_ED.cap, ...LOCAL_ED.cap }, ed: { ...BASE_ED.ed, ...LOCAL_ED.ed }, arc: { ...BASE_ED.arc, ...LOCAL_ED.arc } }; };
+const merged = () => { const b = bakedRows(); return { add: [...BASE_ED.add, ...LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r)))], del: [...new Set([...BASE_ED.del, ...LOCAL_ED.del])], cap: { ...BASE_ED.cap, ...LOCAL_ED.cap }, cas: { ...BASE_ED.cas, ...LOCAL_ED.cas }, ed: { ...BASE_ED.ed, ...LOCAL_ED.ed }, arc: { ...BASE_ED.arc, ...LOCAL_ED.arc } }; };
 const edPending = () => Object.keys(LOCAL_ED.ed).filter(k => JSON.stringify(LOCAL_ED.ed[k]) !== JSON.stringify(BASE_ED.ed[k]));
 const arcPending = () => Object.keys(LOCAL_ED.arc).filter(k => LOCAL_ED.arc[k] !== !!BASE_ED.arc[k]);
 const baseCap = n => n in BASE_ED.cap ? BASE_ED.cap[n] : CAPTAINS.has(lc(n));
 const isCap = n => n in LOCAL_ED.cap ? LOCAL_ED.cap[n] : baseCap(n);
-const pendingCount = () => { const b = bakedRows(), bd = new Set(BASE_ED.del); return LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r))).length + LOCAL_ED.del.filter(i => !bd.has(i)).length + Object.keys(LOCAL_ED.cap).filter(n => LOCAL_ED.cap[n] !== baseCap(n)).length + edPending().length + arcPending().length; };
+const baseCas = n => n in BASE_ED.cas ? BASE_ED.cas[n] : CASTERS.has(lc(n));
+const isCas = n => n in LOCAL_ED.cas ? LOCAL_ED.cas[n] : baseCas(n);
+const pendingCount = () => { const b = bakedRows(), bd = new Set(BASE_ED.del); return LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r))).length + LOCAL_ED.del.filter(i => !bd.has(i)).length + Object.keys(LOCAL_ED.cap).filter(n => LOCAL_ED.cap[n] !== baseCap(n)).length + Object.keys(LOCAL_ED.cas).filter(n => LOCAL_ED.cas[n] !== baseCas(n)).length + edPending().length + arcPending().length; };
 // IDX/SORTED/NAMES = active players only. ARC/ARCHIVED = archived players (name -> row index, and [row, index] pairs).
 let ALL = [], SORTED = [], IDX = {}, NAMES = new Set(), ARC = {}, ARCHIVED = [];
 const build = () => {
@@ -517,6 +522,8 @@ const b64u = str => btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').
 const unb64u = str => decodeURIComponent(escape(atob(str.replace(/-/g, '+').replace(/_/g, '/'))));
 const capDiffers = () => [...NAMES].some(n => isCap(n) !== CAPTAINS.has(lc(n)));
 const capParam = () => 'c=' + [...NAMES].filter(isCap).map(n => code(IDX[n])).join('');
+const casDiffers = () => [...NAMES].some(n => isCas(n) !== CASTERS.has(lc(n)));
+const casParam = () => 'k=' + [...NAMES].filter(isCas).map(n => code(IDX[n])).join('');
 const rosterParam = () => {
   const b = bakedRows(), bd = new Set(BASE_ED.del);
   const add = LOCAL_ED.add.filter(r => !b.has(JSON.stringify(r))), del = LOCAL_ED.del.filter(i => !bd.has(i));
@@ -538,6 +545,12 @@ const applyShared = hash => {
     const want = new Set(decM(cm[1]).map(k => ALL[k]).filter(Boolean).map(x => x[0]));
     const cap = {}; [...NAMES].forEach(n => { if (want.has(n) !== baseCap(n)) cap[n] = want.has(n); });
     LOCAL_ED = { ...LOCAL_ED, cap }; saveLocal();
+  }
+  const km = hash.match(/[#&]k=([^&]*)/);
+  if (km) {
+    const want = new Set(decM(km[1]).map(k => ALL[k]).filter(Boolean).map(x => x[0]));
+    const cas = {}; [...NAMES].forEach(n => { if (want.has(n) !== baseCas(n)) cas[n] = want.has(n); });
+    LOCAL_ED = { ...LOCAL_ED, cas }; saveLocal();
   }
 };
 const canon = (n, list) => list.find(x => lc(x) === lc(n)) || n;
@@ -578,6 +591,7 @@ class Component extends DCLogic {
     const parts = [];
     if (this.state.teams.length) parts.push('t=' + enc(this.state.teams));
     if (capDiffers()) parts.push(capParam());
+    if (casDiffers()) parts.push(casParam());
     const rp = rosterParam(); if (rp) parts.push(rp);
     try { history.replaceState(null, '', location.pathname + location.search + (parts.length ? '#' + parts.join('&') : '')); } catch (e) {}
   }
@@ -608,6 +622,10 @@ class Component extends DCLogic {
     LOCAL_ED = { ...LOCAL_ED, cap: { ...LOCAL_ED.cap, [name]: !isCap(name) } }; saveLocal();
     this.setState(s => ({ dl: false, rv: (s.rv || 0) + 1 }), () => this.persist());
   }
+  toggleCaster(name) {
+    LOCAL_ED = { ...LOCAL_ED, cas: { ...LOCAL_ED.cas, [name]: !isCas(name) } }; saveLocal();
+    this.setState(s => ({ dl: false, rv: (s.rv || 0) + 1 }), () => this.persist());
+  }
   setForm(p) { this.setState(s => ({ form: { ...s.form, ...p, err: '' } })); }
   toggleIn(key, n) { this.setState(s => { const l = s.form[key]; return { form: { ...s.form, err: '', [key]: l.includes(n) ? l.filter(x => x !== n) : [...l, n] } }; }); }
   savePlayer() {
@@ -620,9 +638,9 @@ class Component extends DCLogic {
     const fields = [name, f.stars, [...new Set(f.top.filter(Boolean))].join(', '), ord(f.strikers, STRIKERS), ord(f.customs, CUSTOMS), f.rank, f.peak];
     if (editing) {
       const ex = { ...(ALL[f.editIdx][7] || {}), show: true };
-      const wasCap = isCap(old);
+      const wasCap = isCap(old), wasCas = isCas(old);
       LOCAL_ED = { ...LOCAL_ED, ed: { ...LOCAL_ED.ed, [f.editIdx]: [...fields, ex] } };
-      if (old !== name) LOCAL_ED = { ...LOCAL_ED, cap: { ...LOCAL_ED.cap, [name]: wasCap } };
+      if (old !== name) LOCAL_ED = { ...LOCAL_ED, cap: { ...LOCAL_ED.cap, [name]: wasCap }, cas: { ...LOCAL_ED.cas, [name]: wasCas } };
       saveLocal(); build();
       if (old !== name) this.setTeams(ts => ts.map(x => ({ ...x, members: x.members.map(m => m === old ? name : m) })));
     } else {
@@ -664,7 +682,9 @@ class Component extends DCLogic {
     const hero = picks[0];
     const others = picks.slice(1).map(src).filter(Boolean);
     const sl = split(strk), cl = split(cust);
-    return {
+    const cas = isCas(name);
+    const c = {
+
       name, rank, peak, showRank, rankText: rank,
       rot: this.state.flipped[name] ? 'rotateY(180deg)' : 'rotateY(0deg)',
       flip: () => this.flip(name),
@@ -696,6 +716,15 @@ class Component extends DCLogic {
         ? { fill: t.a, shadow: `drop-shadow(0 0 3px ${hex(t.a,.7)})` }
         : { fill: 'rgba(255,255,255,.14)', shadow: 'none' })
     };
+    c.isCas = cas; c.onCaster = e => { e.stopPropagation(); this.toggleCaster(name); };
+    c.casBg = cas ? t.a : 'rgba(10,8,16,.55)'; c.casColor = cas ? '#0a0810' : '#e6e1f2'; c.casBorder = cas ? t.a : 'rgba(255,255,255,.28)';
+    // Caster card: caster art on both sides, CASTER on the front, no striker or rank details.
+    if (cas) Object.assign(c, {
+      photoList: [ex.casterPhoto || CASTER_FRONT], backPhotoList: [ex.casterBack || CASTER_BACK], hasBack: false,
+      heroName: 'Caster', hasTop: true, noTop: false, heroNoImg: false, heroSize: 21, heroList: [], leftList: [], rightList: [],
+      alts: [], hasAlts: false, showRank: false
+    });
+    return c;
   }
   renderVals() {
     const showRank = this.props.showRank ?? true;
@@ -739,7 +768,7 @@ class Component extends DCLogic {
       archiveLabel: ARCHIVED.length + (ARCHIVED.length === 1 ? ' player' : ' players'),
       formTitle: f.editIdx != null ? 'Edit player' : 'Add player',
       saveLabel: f.editIdx != null ? 'Save changes' : 'Add player',
-      discardLocal: () => { if (!confirm('Discard roster changes made in this browser?')) return; LOCAL_ED = { add: [], del: [], cap: {}, ed: {}, arc: {} }; saveLocal(); build(); this.setState({ dl: false }); this.pruneTeams(); },
+      discardLocal: () => { if (!confirm('Discard roster changes made in this browser?')) return; LOCAL_ED = { add: [], del: [], cap: {}, cas: {}, ed: {}, arc: {} }; saveLocal(); build(); this.setState({ dl: false }); this.pruneTeams(); },
       downloadSite: () => this.downloadSite(),
       formOpen: !!this.state.form,
       openForm: () => this.setState({ form: blankForm() }),
