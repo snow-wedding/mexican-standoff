@@ -402,6 +402,8 @@ const ALLC = "Falcon Ace, Falcon Cloudpiercer, Welkin, Tricera, Narukami, Alphar
 const CAPTAINS = new Set(['hinomaru','prao','ponch','avunew','avocatdo','j044']);
 // Casters get the caster card: their own art if the row has casterPhoto/casterBack, otherwise the default caster art.
 const CASTERS = new Set(['festival','pred']);
+// Previous tournament winners: a crown sits on top of their card.
+const CHAMPIONS = new Set(['soletta','avunew','nutellasauce','kryto','staro','lordcookie','madammoistur']);
 const CASTER_FRONT = 'uploads/caster/caster-front.svg', CASTER_BACK = 'uploads/caster/caster-back.svg';
 const RAW = [
 ["Ponch",5,"Serenith, Hurricane, Hel","Serenith, Alysnes, Freyr, Hurricane, Tricera, Stego, Narukami, Hel","","Champion","Indestructible"],
@@ -716,6 +718,7 @@ class Component extends DCLogic {
         ? { fill: t.a, shadow: `drop-shadow(0 0 3px ${hex(t.a,.7)})` }
         : { fill: 'rgba(255,255,255,.14)', shadow: 'none' })
     };
+    c.crownList = CHAMPIONS.has(lc(name)) ? [1] : [];
     c.isCas = cas; c.onCaster = e => { e.stopPropagation(); this.toggleCaster(name); };
     c.casBg = cas ? t.a : 'rgba(10,8,16,.55)'; c.casColor = cas ? '#0a0810' : '#e6e1f2'; c.casBorder = cas ? t.a : 'rgba(255,255,255,.28)';
     // Caster card: caster art on both sides, CASTER on the front, no striker or rank details.
